@@ -1,10 +1,6 @@
 # IR3V2 Klipper Eddy Current Probe
 
-A compact, eddy-current probing setup for the IdeaFormer IR3V2 conveyor-belt printer using the BDsensor and Klipper. This project adapts the BDsensor to act as a virtual endstop for homing and probing along the Y axis (belt-normal direction), ignoring belt angle corrections for now.
-
-> This project is based on the [BDSensor](https://github.com/markniu/Bed_Distance_sensor), a tiny eddy current bed probe sensor. Due to the very small size of the probe I elected to use it for my IR3V2.
->
-> The probe is mounted in the fan duct, and wired to an STM32F103 dev board to break out the BDsensor’s I2C lines to USB for Klipper. I used an FK103M2 from Amazon. There may be spare GPIO pins on the IR3V2 main board or toolhead board, but this was the fastest way to get it running and tested.
+A compact, eddy-current probing setup for the IdeaFormer IR3V2 conveyor-belt printer using the BDsensor and Klipper. This project adapts the BDsensor to act as a virtual endstop for homing and probing along the Y axis.
 
 ---
 
@@ -40,7 +36,7 @@ A compact, eddy-current probing setup for the IdeaFormer IR3V2 conveyor-belt pri
 
 ## Hardware
 
-- BDsensor module (Mark Niu’s Bed Distance sensor)
+- [BDSensor](https://github.com/markniu/Bed_Distance_sensor) module (Mark Niu’s Bed Distance sensor)
 - IR3V2 belt printer (CoreXY + belt Z)
 - STM32F103 development board (e.g., FK103M2) as a USB-connected, secondary Klipper MCU
 - Wiring:
@@ -67,8 +63,8 @@ A compact, eddy-current probing setup for the IdeaFormer IR3V2 conveyor-belt pri
 - If you see unstable readings or `10.24` “connection error,” increase the `delay` in the `[BDsensor]` section (try `8–10`) and confirm pull-ups.
 
 Example pin choice on the F103:
-- SDA → `PA1`
-- SCL → `PA0`
+- SDA → `PB7`
+- SCL → `PB6`
 
 You can pick any free GPIOs on the F103 as long as you reference the same pins in `[BDsensor]`.
 
@@ -88,10 +84,6 @@ serial: /dev/serial/by-id/usb-Klipper_STM32F103_FK103M2-if00
 # restart_method: command
 ```
 
-You’ll then reference pins as `bds:PA1`, `bds:PA0`, etc.
-
-If you prefer to keep a single `[mcu]`, just drop the `bds:` prefix in the examples below and use your main MCU’s pin names.
-
 ### [BDsensor] section
 
 The BDsensor module bit-bangs the interface on any two GPIOs. Start with a moderate `delay` (e.g., `8`) for robust comms.
@@ -99,8 +91,8 @@ The BDsensor module bit-bangs the interface on any two GPIOs. Start with a moder
 ```ini
 [BDsensor]
 # Use the F103 pins (or your main MCU pins if not using a secondary MCU)
-sda_pin: bds:PA1
-scl_pin: bds:PA0
+sda_pin: bds:PB7
+scl_pin: bds:PB6
 # Alternatively, you can use 'clk_pin:' if preferred by your firmware fork
 
 delay: 8                 # 5–10; higher can help if wiring is noisy/long
